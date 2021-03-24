@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  backend:
+    env_file:
+        "./env-backend"
+    ports:
+      - "3001:8080"
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    entrypoint: ["/bin/bash", "./entrypoint.sh"]
+    volumes:
+      - ./data-public:/usr/app/public
+
+    ## Use External mysql Instance  
+    networks:
+      - net-db
+    external_links:
+      - mysql-percona:db
+
+  frontend:
+    env_file:
+            "./env-frontend"
+    ports:
+      - "3000:3000"
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    #volumes:
+    #- ./frontend:/usr/app/
+
+## Use External mysql Instance  
+## docker network connect net-db mysql-percona
+networks:
+  net-db:
+    external: true
